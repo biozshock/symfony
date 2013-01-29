@@ -17,7 +17,6 @@ use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\Process\PhpProcess;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
-use Symfony\Component\BrowserKit\Client;
 
 /**
  * Client simulates a browser.
@@ -313,6 +312,8 @@ abstract class Client
      * Returns the script to execute when the request must be insulated.
      *
      * @param Request $request A Request instance
+     *
+     * @return string
      *
      * @throws \LogicException When this abstract class is not implemented
      */

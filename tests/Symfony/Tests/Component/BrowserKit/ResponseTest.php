@@ -65,8 +65,8 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         );
 
         $expected = 'content-type: text/html; charset=utf-8'."\n";
-        $expected.= 'set-cookie: foo=bar'."\n";
-        $expected.= 'set-cookie: bar=foo'."\n\n";
+        $expected.= 'set-cookie:   foo=bar'."\n";
+        $expected.= 'set-cookie:   bar=foo'."\n\n";
         $expected.= 'foo';
 
         $response = new Response('foo', 304, $headers);

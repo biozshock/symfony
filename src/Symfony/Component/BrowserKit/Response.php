@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\BrowserKit;
 
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+
 /**
  * Response object.
  *
@@ -20,9 +22,17 @@ namespace Symfony\Component\BrowserKit;
  */
 class Response
 {
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\ResponseHeaderBag
+     */
+    public $headers;
+
     protected $content;
+    protected $version;
     protected $status;
-    protected $headers;
+
+    protected $arrayHeaders;
 
     /**
      * Constructor.
@@ -38,9 +48,10 @@ class Response
      */
     public function __construct($content = '', $status = 200, array $headers = array())
     {
+        $this->arrayHeaders = $headers;
+        $this->headers = new ResponseHeaderBag($headers);
+        $this->status = $status;
         $this->content = $content;
-        $this->status  = $status;
-        $this->headers = $headers;
     }
 
     /**
@@ -50,18 +61,15 @@ class Response
      */
     public function __toString()
     {
-        $headers = '';
-        foreach ($this->headers as $name => $value) {
-            if (is_string($value)) {
-                $headers .= $this->buildHeader($name, $value);
-            } else {
-                foreach ($value as $headerValue) {
-                    $headers .= $this->buildHeader($name, $headerValue);
-                }
-            }
-        }
+        //TODO: probably here we don't need to clone headers?
+        /** @var \Symfony\Component\HttpFoundation\ResponseHeaderBag $headers  */
+        $headers = clone $this->headers;
+        $headers->remove('date');
+        $headers->remove('cache-control');
 
-        return $headers."\n".$this->content;
+        //TODO: don't like this. Maybe replace this in tests so they will not fail?
+        //TODO: also there are identation of header values in ResponseHeaderBag. Do we need this?
+        return str_replace("\r", '', strtolower($headers))."\n".$this->getContent();
     }
 
     /**
@@ -110,7 +118,7 @@ class Response
      */
     public function getHeaders()
     {
-        return $this->headers;
+        return $this->arrayHeaders;
     }
 
     /**
@@ -123,16 +131,6 @@ class Response
      */
     public function getHeader($header, $first = true)
     {
-        foreach ($this->headers as $key => $value) {
-            if (str_replace('-', '_', strtolower($key)) == str_replace('-', '_', strtolower($header))) {
-                if ($first) {
-                    return is_array($value) ? (count($value) ? $value[0] : '') : $value;
-                }
-
-                return is_array($value) ? $value : array($value);
-            }
-        }
-
-        return $first ? null : array();
+        return $this->headers->get($header, null, $first);
     }
 }

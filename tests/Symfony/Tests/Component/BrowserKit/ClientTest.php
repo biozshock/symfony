@@ -46,13 +46,20 @@ class TestClient extends Client
 
     protected function getScript($request)
     {
+        $r = new \ReflectionClass('Symfony\Component\HttpFoundation\HeaderBag');
+        $pathHeaderBag = $r->getFileName();
+
+        $r = new \ReflectionClass('Symfony\Component\HttpFoundation\ResponseHeaderBag');
+        $pathResponseHeaderBag = $r->getFileName();
+
         $r = new \ReflectionClass('Symfony\Component\BrowserKit\Response');
-        $path = $r->getFileName();
+        $pathBrowserKitResponse = $r->getFileName();
 
         return <<<EOF
 <?php
-
-require_once('$path');
+require_once('$pathHeaderBag');
+require_once('$pathResponseHeaderBag');
+require_once('$pathBrowserKitResponse');
 
 echo serialize($this->nextScript);
 EOF;
