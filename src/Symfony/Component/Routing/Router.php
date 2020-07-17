@@ -323,6 +323,8 @@ class Router implements RouterInterface, RequestMatcherInterface
                 ];
 
                 $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
+
+                unset(self::$cache[$cache->getPath()]);
             }
         );
 
@@ -367,6 +369,8 @@ class Router implements RouterInterface, RequestMatcherInterface
                     ];
 
                     $cache->write($dumper->dump($options), $this->getRouteCollection()->getResources());
+
+                    unset(self::$cache[$cache->getPath()]);
                 }
             );
 
